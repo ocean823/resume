@@ -1,0 +1,213 @@
+1. S3/S4/S5有何不同
+Ans:
+	* S3: 睡眠 或 suspend to RAM 
+		  將內容存入memory中，沒關機所以不能把電源拔掉
+		  透過打開螢幕或是按任何button，可以wakeup
+	* S4: 休眠, hibernation or suspend to disk
+		  將內容存入硬碟中，可以關掉電源
+		  必須按下power鍵可能wakup，而且時間會比較長
+	* S5: soft off, G2
+		  已算關機，只是有部份component仍帶電，還是可以被keyboard，數據機，網路wakeup
+		  不過都得透過執行啟動程式來啟動OS
+		  
+2. HP Test tool WinPVT
+Ans: 
+	HP 開發的 testing tool，主要用在windows上的testing
+	應該是bundle在HP自已的notebook上
+	
+3. Win8.1有何新feature, Win8/Win8.1的不同
+
+Ans:
+	* snapView (視窗分割) 有更多size可以選擇而且可以自已customize
+	  最多支援到三個app同時開啟
+	* metro 的 icon 多更多size可以選擇
+	* IE 11
+	* 多了可以開機直接進入傳統桌面的設定
+	* start button的回歸，不過跟以前Win7有點不同，按下start button會進入metro介面
+	* 搭配特定app，支援3D printing
+
+4. WHCK/WACK
+Ans:
+	* WACK: Windows Application Certification Kit
+	  是一個去verify你的desktop AP可不可以pass win8 logo的tool
+	  主要是透過安裝AP, launch, 做一些動作，反安裝來收集資訊去判斷能不能pass logo
+	  gen出來的log會告訴你那些operation通過的status
+	  failed的話會有教學告訴你該怎麼做才能pass
+	
+	  像我們過WACK的時侯主要是遇到BinScope Binary analyzer的error
+	  教學告訴我們在linker更改一些參數再重build即可
+	  
+	* WHCK: Windows Hardware Certification Kit
+
+	
+5. Bios 從win8開始走UEFI 
+Ans:
+	* UEFI(Unified Extensible Firmware Interface) 統一可延伸韌體介面
+	* 縮短啟動及從休眠狀態恢復的時間
+	* 相較於傳統的bios用組語寫, UEFI用c實作比較好維護
+
+	UEFI開機有以下幾個階段:
+
+	SEC: Ssecurity Phase是用組語寫的，CPU會動起來並且把cache當做ram使用
+		 會驗證PEI階段的code是否可正常執行
+	PEI: Pre-EFI Phase開始用C寫，會在cache裡執行，會初始化基本的hardware
+		 不過不是完整的，只先把memory初始化
+	DXE: Driver Execute Enviroment Phase, 記憶體初始化完成
+	     開始做完整的硬體初始化和分配硬體資源(MEMORY, IRQ, IO, DMA)
+	BDS: 在Boot Device Selection Phase開始連接開機的裝置，
+		 試著把控制權交給OS，失敗的話會回到DXE或顯示沒有開機裝置的info
+	TSL: 在Transient System Load, 基本的開機都做完了，這裡是一個叫shell的環境
+	     可以執行一些UEFI的application，一般不會進這裡，會直接進OS
+	RT: Run time, 已經開到OS階段，可執行一些runtime service，
+	     或是跟OS的driver或ap配合，也有一些SMM的程式會在這些階段中斷且執行它
+	AL: After life，關機後，這些程式就消失了，runtime service也不會存在
+
+
+5.1 Bios執行流程
+Ans:
+	* bios (basic input/output system) 一個存在ROM的firmware，提供hardware基本的initialize
+	1. 0xFFFF0
+		x86 CPU 會先執行 0xFFFF0，跳到這裡執行bios程式
+	2. Post (Power on self test：開機自我檢測)
+		確保系統可以在開機可以正確執行，會用beep聲代表檢查結果
+	3. Video Card BIOS
+		jump 到 0xC0000000 ~ 0xC7800000(顯卡bios的位址)執行顯卡的initialize
+		成功後，第一個畫面會出現
+	4. Full POST
+		總檢查
+		* Video test: 測試顯卡，及顯示記憶體
+		* Bios test: 顯示bios板本，製造商及日期
+		* Memory Test: 顯示安裝的memory容量
+	5. Summary Screen
+		將整個資訊顯示在螢幕上
+	6. Booting
+		執行權交給下個程式執行，也許是bootloader，也許是OS或隨便一支小程式
+		依設定的順序搜尋各開機磁碟裝置
+	
+5.2 ACPI是啥
+Ans:
+	* ACPI (advanced configuration and power interface)，顧名思斯是對硬體的電源管理和設定介面
+	
+	做的事情很多，大致上分10類
+	
+	* System power management: 整個系統的電源管理
+	  S1~S5，可以在sleep狀態被device wake up
+	  sleep數字越大表示耗電越少，需要喚醒的時間也越長
+	* Device power management: 週邊裝置的電池管理
+	  D0, D1...數字越大代表耗電越少
+	* Processor Power management: 處理器的電源管理
+	  定義了CPU不在sleep而且idle時，可以進入low power狀態，也就是C state
+	  數字越大代表越省電，C0表示運作中
+	* Device and processor performance management: 週邊置和處理器的效能管理
+	  定義在CPU和設備在做事時(C0或D0)，做改變效能的動作，這裡指P state
+	  透常透過降頻來達到省電作用
+	
+6. C++ STL
+Ans:
+	STL: Stand Template Library. template class也稱為container。
+	container包括三類： 
+		* sequence: 
+			vector(陣列) => 連續空間
+			list(串列) => 非連續空間，無[]運算子。插入/刪除有效率
+			deque => 雙向queue。
+		* apters:	 
+			stack(堆疊) => 先進後出
+			queue(佇列) => 先進先出
+			priority_queue(優先權佇列)
+		* associative: 
+			map(序對) => (key,value)的集合，key不可重複
+			multimap => key可重複的map，比較像database
+			set(集合) => 數值不可重複，自動排序
+			multiset => 數值可重複的set，自動排序
+6.1 C++ 11 STL
+Ans:		
+	* 新增container: unordered_set, unordered_map, unordered_multiset, 和 unordered_multimap
+	* 新的library: 正規表示式, tuple...
+	* 本來在c++98的smart pointer是auto pointer
+	  C++11多了兩個新的 pointer class: shared_ptr和unique_ptr
+	  shared_ptr: 單純的reference count pointer
+	  unique_ptr: 用來取代auto_ptr，主要是能有更好的ownership的轉移
+	  
+7. Web Services (SOAP)
+Ans: 
+	簡單物件存取協定（SOAP，全寫為Simple Object Access Protocol）是交換資料的一種協議規範由XML編碼
+	
+	一個 SOAP 訊息可以發送到一個具有 Web Service 功能的 Web 站點，
+	例如，一個含有房價資訊的資料庫，訊息的參數中標明這是一個查詢訊息，
+	此站點將返回一個XML格式的資訊，其中包含了查詢結果（價格，位置，特點，或者其他資訊）。
+	由於資料是用一種標準化的可分析的結構來傳遞的，所以可以直接被第三方站點所利用。
+
+8. WMI
+Ans:
+	WMI(Windows Management instrument)
+	內建在microsoft windows，user 可以透過WMI管理本機及遠端電腦
+	user可以
+	1. 在遠端電腦啟動一個task
+	2. 設定在特定日期和時間執行的工作
+	3. 遠端啟動電腦...
+
+9. COM
+Ans:
+	COM (component object model)
+	* 微軟為了解決軟體版本衝突，物件跨平台問題所推出的一種物件模型
+	* 支援OOP三個原則：封裝，多型，繼承
+	* 定義的interface中最重要的就是IUnKnown, 所有com都必須實作的interface
+	  定義三個重點的api: QueryInterface(), AddRef(), Release()
+	* 每個COM都有自已的GUID
+
+
+10. SMI
+Ans:	
+	* SMI (system mnagement interrupt)
+	* SMI pin trigger後會使CPU進入SMM mode，而BIOS會把某些些code放在SMM所在位置。
+	  也就是說SMI pin trigger後，CPU會去執行BIOS中的某段code
+	
+11. RAID是什麼? RAID 0 ~ RAID 5
+Ans:
+	* RAID(Redundant Array of Independent Disks)簡稱磁碟陣列
+	  把多個相對便宜的硬碟組合起來，成為磁碟陣列組
+	  使效能甚至能超過一個大容量昂貴的硬碟
+	
+	* RAID 0: Striping/Span (切分/延展)
+	  它是將資料儲存在2個以上的硬碟機，其將全部磁碟機的儲存容量合併
+	  藉由將資料切分到全部的磁碟機上，進行平行讀寫，而達到提高效能增加容量
+	  缺點是沒容錯能力，一個磁碟掛了就整個系統都掛了
+	  
+	* RAID 1: Mirroring (磁碟鏡射)
+	  必須由2個以上的硬碟所組成，由磁碟陣列(RAID)來控制，
+	  將資料同時寫入第1個與第2個硬碟，其2組硬碟上的資料完全相同，
+	  也就是其中一個硬碟是用來作備份用途	  
+	  有一顆硬碟故障，系統可照常運作
+	  缺點是兩顆硬碟就浪費一顆硬碟
+	 
+	* RAID 0+1:  Mirror + Striping (磁碟鏡射+切分/延展)
+	  RAID 0+1，是結合了RAID 0與1兩種模式，這個階層須具備4個或以上的雙數硬碟所組成。
+	  這個模式是由2個硬碟遵守RAID 0規範，設定成一組，再由每組間遵循RAID 1的規範，
+	  使RAID 0+1擁有容錯力及整體讀寫速度與資料安全性
+	  不過，缺點是成本很高
+	
+	* RAID 2:
+	  這是RAID 0的改良版，以漢明碼（Hamming Code）的方式將資料進行編碼後分割為獨立的位元，
+	  並將資料分別寫入硬碟中。因為在資料中加入了錯誤修正碼（ECC，Error Correction Code），
+	  所以資料整體的容量會比原始資料大一些，RAID2最少要三台磁碟機方能運作
+	
+	* RAID 3: Parallel with Parity (平行同位元檢查)
+	  最少需3個硬碟，利用其中一個硬碟存運算出來的同位元值的資料
+	  當其他有其中一個硬碟故障，透過同位元碟的重新計算得到資料並寫回
+	  計算方式以BYTE為單位，如果是BLOCK為單位就是RAID4
+	  整體讀寫效能較差較慢，但成本比RAID 0+1省
+	
+	* RAID 5: Striping with Rotating Parity (切分/延展+輪轉同位元)
+	  最少須3個硬碟，其工作原理與RAID 3相似，
+	  主要差別是其同位元資料沒有固定在同個硬碟，
+	  是以輪流方式儲存在每個硬碟上，故稱輪轉同位元
+	  
+	
+12. 北橋南橋晶片在幹嘛的
+Ans:	
+	* 都是主機板上用來為CPU及memory作協調頻率或工作的兩片控制晶片
+	* 北橋：主要控制CPU與main memory以及PCI匯流排之間的訊連傳輸
+		    現在還有AGP(accelerated graphic prot)圖形加速匯流排的控制功能
+			* 南橋：控制ISA匯流排及PCI匯流排上速度較慢的週邊設備
+	
+

@@ -1,0 +1,1118 @@
+
+1. 何謂繼承
+Ans:
+	您可以繼承某個（父）類別的定義並加以擴充
+	而制訂出一個新的（子）類別定義
+
+	public繼承： public->public, protected->protected, private->不繼承
+	protected繼承：public->protected, protected->protected, private->不繼承
+	private繼承： public->private, protected->private, private->不繼承
+
+2. Virtual function 是什麼
+Ans:
+	如果把function宣告為virtual的話
+	當程式中以父類別的指標使用子類別的 instance 		   
+	的函式成員的時候，會喚起的會是這些子類別自行提供的版本
+
+3. Pure virtual function 是什麼
+Ans:
+	Pure代表禁止實作，會在virtual function後面加個 = 0
+	你只能在dervied class實作他
+	
+4. Template 是什麼
+Ans:
+	範本（Template）提供被參數化的型態（Parameterized Types）功能
+	將型態相依與非型態相依的演算法分離開來
+
+	樣板函式和樣板類別在設計時都只要在函式實作和類別宣告之前加
+	template <class T> 或是 template <typename T>之後就在函式與類別中以 T 代表要替換的型別
+
+5. 多重繼承有什麼影響
+Ans:
+	多重繼承(Multiple Inheritance)顧名思義就是一個類別可以繼承多個父類別
+	優點：簡單，class可重複利用
+	缺點：* ambigous，兩個base class有同名function，必須指定base class名稱
+	      * 可能出現鑽石繼承: B繼承A, C繼承A, D繼承B, C，這樣D的virtual table裡會有duplicate的A
+		    不過可以透過virtual繼承解決這個問題，這樣子base class只會有一份
+			class A {};
+			class B: virtual public A{};
+			class C: virtual public A();
+			class D: public B, public C{};
+	
+6. Friend class 是什麼
+Ans:
+	class A 的定義中 宣告B為其fried
+	B就可以accessad A的protected/private member。
+
+7. Abstract class 是什麼
+Ans:
+	class內有pure virtual function即為abstract class 
+
+8. new operator, operator new 與 Placement new 是什麼
+Ans:
+	* new operator:
+		對heap中的storage進行alloacte及free，不能被overload.
+		allocate的過程中會用到operator new		
+	* operator new
+		跟operator+一樣，是可以被overload的。
+		只能在class內進行overload。
+	* placement new
+		operator new的overload版本，多接受一個raw memory的參數
+		不配置memory，而是接受一個指標引數，指向已配置但未建構的memory。
+		user本身要負責destruct這個object
+		note. 不要輕易使用placement new，除非你需要把你的object放在特定的memory位置
+		ex: 當你的hardware是memory-mapped I/O timer device，
+		    而且你又想把clokc這個object放在memory localtion
+
+		名詞解釋 memory mapeped I/O：
+		I/O與memory共用記憶體位置，不需要特別指令來處理I/O
+		其實就是將I/O的port或memory mapped到 memory address上。
+		好處是可以I/O存取可以直接當成記憶體來用，缺點就是有mapped到的區域就不能放真正的 memory。
+		
+10. Critical section 是什麼
+Ans:
+	讓一段code同時只會有一個thread access他
+	critical section: 速度快，是user object，不跨process
+	mutex:慢，是kernel object，跨process
+
+10.2 race condition是什麼?
+Ans:
+	多個process對一個資料進行read/write
+	造成資料的結果因為執行的順序可能有所不同
+	
+11. class跟struct有何不同?
+Ans:
+	struct像class一樣能有member function，能繼承，能實現多型
+	不同處是access level在struct default是public，在class default是private
+
+11.1. struct跟union有何不同?
+Ans: 不同的是Union的所有member都從同個memory location開始，所以一次只能表現一個member的value。
+
+12. program, process, thread是什麼，之間有何不同?
+Ans:
+	* Program：放在disc中，尚未被Load到記憶體的一堆Code
+	* Process：
+		已經被Load到記憶體中，任何一行Code隨時會被CPU執行，且其宣告的在記憶體
+		的變數的值會隨著需求而不斷變動。稱之為「程序」。 (也就是活的Program) => 恐龍本第三章
+			 
+		Process由以下兩個東西組成：
+		a. 一個Memory Space。
+		   相當於Object的variable,不同Process的Memory Space也不同
+		   彼此看不到對方的Memory Space。
+		b. 一個以上的Thread。Thread代表從某個起始點開始(例如main),
+		   到目前為止所有函數的呼叫路徑,以及這些呼叫路徑上所用到的區域變數。
+		   當然程式的執行狀態,除了紀錄在主記憶體外,
+		   CPU內部的暫存器(如Program Counter, Stack Pointer, Program Status Word等)也需要一起紀錄。
+		   所以Thread又由下面兩項組成
+			* Stack:紀錄函數呼叫路徑,以及這些函數所用到的區域變數
+			* 目前CPU的狀態			 
+
+	Thread ：在同一個Process底下，有許多自己的分身，就是Thread，中文又翻成執行緒。
+
+			 * 一個Process可以有多個Thread。
+			 * 同一個Process內的Thread使用相同的Memory Space,
+			   但這些Thread各自擁有其Stack。			 
+			 * 作業系統會根據Thread的優先權以及已經用掉的CPU時間
+			   在不同的Thread作切換,以讓各個Thread都有機會執行	
+
+12.1 virtual memory, page fault, thrashing是什麼	
+Ans:
+	* virtual memory
+	  一種記憶體管理方法，把program空間分成page或segment
+	  當執行到code的時侯才把page或segment load進memory
+	
+	  每個process執行的記憶體總和大於實體記憶體
+	  這時侯就需要用二次儲存裝置(有時侯會是disk)來充當虛擬記憶體
+	* page fault
+	  在main memory中找不到data，要到二次記憶體找的動作就叫page fault
+	  這時侯會有exception被raise出來
+	  
+	* thrashing
+      用到virtual memory時，可能造成page fault次數增加
+	  CPU idle time變長，這時侯OS誤判為是因為process太少造成cpu idle太長
+	  所以加進來更多process，接著會造成page fault的情況更加嚴重
+		 
+12.2 造成deadlock的條件
+Ans:
+	* 這個資源不能同時給兩個人用 
+	* 有一個人拿了一個資源，又想拿別人的資源 
+	* 有個人佔用資源很久，遲遲不release
+	* A等B，B等C，C等D，D又等A 等成一圈。		
+	
+13. namespace是什麼?
+Ans:
+	命名空間是避免大家使用同樣的名稱為類別、物件命名的一種機制
+
+14. heap跟stack有何不同
+Ans:
+	* heap: 	用new allocate的memory就是從heap拿的，需要caller自已free
+				必須透過pointer去動態allocate memory
+				heap是一個大的memory pool，大的array, struct還有class應該從這allocate
+	* stack: 	LIFO架構，存放參數, local變數, function的地方。
+				離開 function的scope就會自已free
+				在stack memory的allocate是在compiler time就知道的
+				stack相對heap比較小，需要allocate較大memory的case不應該在stack做
+				
+15. __cdcel, __fastcall, __stdcall有何不同?
+Ans:
+	* __cdcel:
+		* c/c++ default的呼叫慣例
+		* 函數傳遞由右至左
+		* 由caller清掉stack
+		* compile後，函數名被修飾為 "_functionname"
+	* __stdcall
+		* Windows API default的呼叫慣例
+		* 函數傳遞由右至左
+		* 由callee清掉stack
+		* compile後，函數名被修飾為 "_functionname@number"
+	* __fastcall		
+		* 適用於對性能要求較高的場合
+		* 從左開始不大於4word的參數放入CPU的ECX和EDX register，其餘參數由右至左傳遞
+		* 由callee清掉stack
+		* compile後，函數名被修飾為 "@functionname@number"
+
+16. volatile是什麼?
+Ans:
+	被volatile宣告的變數 compiler不會optimize他，告訴CPU不要cache此變數。
+	讓他的改變能直接寫回memory顯現出來。
+
+17. inline是什麼?有什麼用?
+Ans:
+	* inline function指的是建議commpiler funciton在呼叫點直接展開為程式碼 
+	* 如果function本身做的事很簡單的話，inline可以省去function call的時間
+
+17.1 inline assembly是什麼?有什麼作用?
+Ans: 透過asm這個keyword把assembly code寫在C/C++中
+
+17.2 inline和macro有何不同?
+Ans:
+	a. macro由preprocessor處理，而inline由compiler負責
+	b. macro不檢查型別，inline會檢查型別
+	c. macro無法recursive
+	d. macro無法使用有side effect的參數(像i++)
+
+
+20. C++中四種類型轉換方式 static_cast, dynamic_cast, reinterpret_cast, const_cast的區別和應用
+Ans.
+	* static_cast: 又叫強制轉型，可用於轉換基底類別指標為衍生類別指標，也可用於傳統的資料型態轉換
+					在執行時期使用有危險性，因為compiler無法知道轉型是否正確。				
+	* dynamic_cast: 個基底類別的指標轉型至衍生類別指標，支援執行時期的型態轉換。
+					 稱之為「安全向下轉型」（Safe downcasting）
+					 首先會確定轉換目標與來源是否屬同一個類別階層
+					 失敗會return 0或丟出exception(bad_cast)
+	* reinterpret_cast: 用於將一種型態的指標轉換為另一種型態的指標，例如將char*轉換為int*	
+	* const_cast: const_cast用於一些特殊場合可以覆寫變數的const屬性
+				   利用cast後的指標就可以更改變數的內部
+
+22. malloc和new有何不同?
+Ans:
+	* new/delete是operator，可以overload，只能用在C++。
+		malloc/free是funcion，可以覆蓋，能用在C/C++。
+	* new/delete使用時會call到相對應的constructor/destructor。
+		malloc/free使用只是allocate/deallocate memory。
+	* new/delete return的是某種type的pointer。
+		malloc/free return的是void pointer
+
+23. memory分配方式有那幾種?
+Ans:
+	* static: 從靜態區域分配，在compile時就已經分配好了，如static, global變數。
+	* stack: 從stack create，local變數都可以在stack create，在離開local的function scope時會被自動free。
+	   能分配的容量比較小。
+	* heap: 從heap create，透過new/malloc從heap allocate memory，需要自已用delete/free free memory。
+	   是一個很大的memory pool。
+   
+24. c++中reference和pointer有何不同
+Ans:
+	* reference用的是變數的別名，pointer是指向變數的address。
+	* 在定義時，reference要初始化，pointer不用。
+	* 不能有NULL的reference，但是可以有指向NULl的pointer。
+	* reference初始化後不能改變引用關係，而pointer可以隨時指向其他對象。
+
+25. explicit是什麼?
+Ans: 被宣告為explicit的construcotr不能被顯性/隱性轉換，因為可以達到一般化的效果。
+
+26. #error是什麼?
+Ans: 強迫compiler停止compile，主要用於debug。
+
+27. STL是什麼?STL如何實現vector?
+Ans:
+	a. STL: Stand Template Library. template class也稱為container。
+	   container包括三類： *   sequence: vector(陣列) => 連續空間
+										 list(串列) => 非連續空間，無[]運算子。插入/刪除有效率
+										 deque => 雙向queue。
+						   **  apters:	 stack(堆疊) => 先進後出
+										 queue(佇列) => 先進先出
+										 priority_queue(優先權佇列)
+						   *** associative: map(序對) => (key,value)的集合，key不可重複
+											multimap => key可重複的map，比較像database
+											set(集合) => 數值不可重複，自動排序
+											multiset => 數值可重複的set，自動排序
+					 
+	b. 	dynamic array實作。		
+
+29. Process的同步機制?
+Ans:	
+	a. critical section.
+	b. semaphore. 
+	c. mutex
+
+30. Process如何互相communicate?
+Ans:
+	a. shared memory.
+	b. pipe. 分為anonymous pipe和named pipe.
+	c. socket. 是named pipe的一種.
+
+31. C++有那些特性?
+Ans. 封裝，繼承和多型
+	a. 封裝：把data和methon放進clas裡面，每個class對自已的data/method進行protection(private, protected, public)。
+	b. 繼承：您可以繼承某個（父）類別的定義並加以擴充而制訂出一個新的（子）類別定義
+	c. 多型：* 動態多型：使用繼承和dynamic binding實現。
+			 * 靜態多型： overloading和template來實現參數化型態。
+			 型別轉換，operator/function overloading也算是多的概念。
+		 		 
+32. 用a給出下列定義
+Ans:a. An integer.
+		int a;
+	b. A pointer to an integer.
+		int *a;
+	c. A pointer to a pointer to an integer.
+		int **a;
+	d. An array of 10 integers. 
+		int a[10];
+	e. An array of 10 pointers to integers.
+		int *a[10];
+	f. A pointer to an array of 10 integers.
+		int (*a)[10];
+	g. A pointer to a function that takes an integer as an argument and returns an integer.
+		int (*a)(int);
+	h. An array of ten pointers of functions that take an integer argument and return an integer.
+		int (*a[10])(int);	
+
+33. 解釋以下意思.
+Ans: 
+	a. const int a; a是const
+	b. int const a; a是const
+	c. const int *a; (*a)是const, a可變
+	d. int * const a; a是const, (*a)可變
+	e. int const * a const; 
+	f. int const * const a; a是const pointer指向const integer， (*a), *a都是const不可變
+	g. int f1(int x) const // 此const代表此function不可以修改Data Member
+  
+34. const和static可以同時修飾一個變數嗎?
+Ans:不行，因為const會隱含this*參數，但是static是沒有this pointer的
+
+35. C++ empty class 產生那些成員函數?
+Ans:
+	class Empty
+	{
+	public:
+		Empty(); // default constructor
+		Empty( const Empty& ); // copy constructor
+		~Empty(); // destructor
+		Empty& operator=( const Empty& ); // assign operator
+		Empty* operator&(); // get address operator
+		const Empty* operator&() const; //  get address operator const
+	};
+	
+36. overload(多載)和override(覆蓋)有何不同?
+Ans:
+	* overload: 兩個function可以有同樣的名字但是具有不同個數或型態的參數，稱之為多載
+	* override: 衍生類別的虛擬函式可以取代基礎類別的同名虛擬函式
+	
+37. sizeof和strlen有何不同?
+Ans:
+	* sizeof是一個operator，strlen是一個library function。
+	* sizeof的參數可以是data type也可以是變數。strlen的參數只能是結尾是'\0'的string。
+	* sizeof的結果在compiler就決定，strlen的結果在runtime在決定。
+	* sizeof計算的是data type佔memory的大小，而strlen計算的是字串的長度。
+	
+38. static在C和C++有什麼不一樣
+Ans:
+	static在C用來修飾variable，而在C++除了做到這功能還可以拿來修class的member function或member variable。
+	
+39. extern是什麼?有什麼作用?
+Ans: 
+	extern可以聲明變數會在其它的位置被定義
+
+40. 非C++內建型別A, B在那些情況B能隱式轉換成A
+Ans:
+	* class B: public A {...} // B public 繼承A
+	* class B { operator A();} // B implement了A的隱式轉換
+	* class A { A{const B&}; } // A implement了參數為B的constructor
+	* A& operator = ( const A& )
+
+
+41. heap tree是什麼?
+Ans:	
+	堆積樹是一個二元樹，	
+	堆積樹的 父節點若小於子節點，則稱之為最小堆積（Min Heap）
+	父節點若大於子節點，則稱之為最大堆積（Max Heap）
+	
+	
+42. ++i 和 i++有何不同?
+Ans:
+	如果i是一個複雜的class，++i會比較好。
+	因為i++會需要多一個變數來做copy。
+	
+	++i;  // Fetch i, increment it, and return it
+	i++;  // Fetch i, copy it, increment i, return copy
+
+43. static是什麼
+Ans:
+	修飾檔案中的全域變數或函式
+	令全域變數與函式只限於在該檔案中被使用，效果之一是保護內部函式不被使用，
+	效果之是避免同名衝突
+
+	修飾函式中的區域變數
+	通常函式中的區域變數在程式流程每次進入函式的時候才被產生於堆疊區，並且初始化，
+	程式流程一旦離開了函式，它就會被消滅，所以該變數的數值是無法保留的，
+	每次進入函式都會由初始值重新開始，但如果將這些區域變數宣告為 static，
+	就會令它保持現值，等於是讓區域變數有全域變數的效果。
+
+	修飾類別中的資料或函式成員
+	如前篇所述，要使用類別中的資料成員與函式成員，必須以該類別宣告變數(new instance)之後，
+	才能夠透過 . 運算子或 -> 運算子取用，但是如果把類別中的資料或函式宣告為 static，
+	它們就變成不依賴實體(instance)運作的全域變數與全域函式，可以直接依據類別明撐以 ::  運算子取用，
+	等於是有了全域變數與全域函式的效果。
+	
+	
+44. LoadLibrary的流程?
+Ans:
+	* Use LoadLibrary
+	* 如果DLL還沒load到memory裡就去找dll的實體位置把dll load到memory
+	* dll的 use count ++
+	* 如果 use count 等於1，用DLL_PROCESS_ATTACH call DLLMain
+	* return dll instance (load address)
+	
+45. double pointer有何作用?	
+Ans: 想改變一個pointer的address的時侯		
+	
+46. spinlock 使用時機
+Ans: 
+	spinlock就是busy waiting
+	spinlock是佔用CPU時間來做waiting的動作
+	在多核心的情況下可以用spinlock去避免context switch
+	
+47. Hash是什麼，你會用什麼方式implement他	
+
+	
+==============  程式題 ====================	
+
+1. Revese string
+Ans:
+	void reverse(char s[])
+	{
+	      int length = strlen(s) ;
+	      int c, i, j;
+
+	      for (i = 0, j = length - 1; i < j; i++, j--)
+	     {
+	         c = s[i];
+	         s[i] = s[j];
+	         s[j] = c;
+	      }
+	}
+	
+	void strrev(char *p)
+	{
+		char *q = p;
+		while(q && *q) ++q;
+		for(--q; p < q; ++p, --q)
+		{
+			*p = *p ^ *q,
+			*q = *p ^ *q,
+			*p = *p ^ *q;
+		}
+	}
+
+2. Reverse linked list
+Ans:
+	Node *Reverse (Node *p) 
+	{ 
+	   Node *pr = NULL; 
+	   while (p != NULL) 
+	   { 
+	      Node *next = p->next; 
+	      p->next = pr; 
+	      pr = p; 
+	      p = next; 
+	   } 
+	   return pr; 
+	}
+
+3. 計算一個byte有多少bit被設成on
+Ans:
+	int bitcount(unsigned int n)
+	{
+	   int count = 0 ;
+	   while (n)
+	   {
+	      count++ ;
+	      n &= (n - 1) ;
+	   }
+	   return count ;
+	}
+
+4. 字串轉換成整數 (atoi)
+Ans:
+	int atoi( const char *c ) {
+	    int value = 0;
+		bool isNeg = false;
+		
+		if((*c) == '-'){
+			isNeg = true;
+			c++;
+		}			
+		
+	    while ( (*c) != '\0') {
+	        value *= 10;
+	        value += (int) (*c-'0');
+	        c++;
+	    }
+		
+		if (isNeg)
+			value *= -1;
+	    return value;
+	}
+	
+5. 整數轉換成字串 (itoa)
+Ans:
+	a. char* 版
+	char* itoa_c(int value, char* result, int base)                                                                                                          
+	{                                                                                                                                                        
+	    // check that the base if valid                                                                                                                      
+	    if ( base < 2 || base > 36 ) {                                                                                                                       
+			*result = '\0';                                                                                                                                  
+			return result;                                                                                                                                   
+	    }                                                                                                                                                    
+	 
+	    char* ptr = result, *ptr1 = result, tmp_char;                                                                                                        
+	    int tmp_value;                                                                                                                                       
+	 
+	    do {                                                                                                                                                 
+			tmp_value = value;                                                                                                                               
+			value /= base;                                                                                                                                   
+			*ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + (tmp_value - value * base)];                             
+	    } while ( value );                                                                                                                                   
+	 
+	    // Apply negative sign                                                                                                                               
+	    if ( tmp_value < 0 )                                                                                                                                 
+			*ptr++ = '-';                                                                                                                                    
+	    *ptr-- = '\0';                                                                                                                                       
+	 
+	    while ( ptr1 < ptr ) {                                                                                                                               
+			tmp_char = *ptr;                                                                                                                                 
+			*ptr-- = *ptr1;                                                                                                                                  
+			*ptr1++ = tmp_char;                                                                                                                              
+	    }                                                                                                                                                    
+	 
+	    return result;                                                                                                                                       
+	}
+	
+	b. string版
+		std::string itoa(int value, int base) {
+		
+			std::string buf;
+		
+			// check that the base if valid
+			if (base < 2 || base > 16) return buf;
+
+			int quotient = value;
+		
+			// Translating number to string with base:
+			do {
+				buf += "0123456789abcdef"[ std::abs( quotient % base ) ];
+				quotient /= base;
+			} while ( quotient );
+		
+			// Append the negative sign
+			if ( value < 0) buf += '-';
+		
+			std::reverse( buf.begin(), buf.end() );
+			return buf;
+		}	
+		
+		
+6. 實作一個 strcpy function. 
+Ans:
+
+	char * strcpy( char *strDest, const char *strSrc )      
+	{     
+	    if(strDest == strSrc) { return strDest; }  
+	    assert( (strDest != NULL) && (strSrc != NULL) );     
+	    char *address = strDest;      
+	    while( (*strDest++ = *strSrc++) != '\0' );      
+	    return address;     
+	} 
+	
+7. 實作function確定一個數是否是2的冪次
+Ans:
+	bool IsPower2(int x)
+	{
+		return ( (x > 0) && ((x & (x - 1)) == 0) );
+	}
+
+8. 寫一function 求兩數之和，但是不用'+', '-', 'x', '/'
+Ans:
+	int AddWithoutArithmetic(int num1, int num2)
+	{
+	        if(num2 == 0)
+	                return num1;
+	 
+	        int sum = num1 ^ num2;
+	        int carry = (num1 & num2) << 1;
+	 
+	        return AddWithoutArithmetic(sum, carry);
+}
+
+9. 實作sorting.
+Ans:
+	O(n^2)
+	void BubbleSort(int a[], int array_size)
+	{
+		 int i, j, temp;
+		 for (i = 0; i < (array_size - 1); ++i)
+		 {
+			  for (j = 0; j < array_size - 1 - i; ++j )
+			  {
+				   if (a[j] > a[j+1])
+				   {
+						temp = a[j+1];
+						a[j+1] = a[j];
+						a[j] = temp;
+				   }
+			  }
+		 }
+	}
+
+	O(n^2)
+	void SelectionSort(int a[], int array_size)
+	{
+		 int i;
+		 for (i = 0; i < array_size - 1; ++i)
+		 {
+			  int j, min, temp;
+			  min = i;
+			  for (j = i+1; j < array_size; ++j)
+			  {
+				   if (a[j] < a[min])
+						min = j;
+			  }
+
+			  temp = a[i];
+			  a[i] = a[min];
+			  a[min] = temp;
+		 }
+	}	
+
+	O(n^2)
+	void insertionSort(int a[], int array_size)
+	{
+		 int i, j, index;
+		 for (i = 1; i < array_size; ++i)
+		 {
+			  index = a[i];
+			  for (j = i; j > 0 && a[j-1] > index; j--)
+				   a[j] = a[j-1];
+
+			  a[j] = index;
+		 }
+	}	
+
+
+	/*** quick sort O(nlogn)****/	
+	void quickSort( int a[], int first, int last ) 
+	{
+		int pivotElement;
+	 
+		if(first < last)
+		{
+			pivotElement = pivot(a, first, last);
+			quickSort(a, first, pivotElement-1);
+			quickSort(a, pivotElement+1, last);
+		}
+	}
+	 
+	int pivot(int a[], int first, int last) 
+	{
+		// 設first為pivot
+		int  p = first;
+		int pivotElement = a[first];
+	 
+		for(int i = first+1 ; i <= last ; i++)
+		{
+			// trace array一遍，找到比pivot值小的就swap
+			// 這裡主要是把小的分在左半部份(<= p值)，大的分在右半部份 (>p值)
+			if(a[i] <= pivotElement)
+			{
+				p++;
+				swap(a[i], a[p]);
+			}
+		}	 
+		
+		// 將pivot值swap到中間來
+		// 這裡代表p的左邊都比a[p]小，右邊都比a[p]大
+		swap(a[p], a[first]);	 
+		return p;
+	}
+	 
+	void swap(int& a, int& b)
+	{
+		int temp = a;
+		a = b;
+		b = temp;
+	}
+
+
+	/*** heap sort O(nlogn)****/	
+	void heapSort(int numbers[], int array_size) {
+	  int i, temp;
+	 
+	  for (i = (array_size / 2); i >= 0; i--) {
+		siftDown(numbers, i, array_size - 1);
+	  }
+	 
+	  for (i = array_size-1; i >= 1; i--) {
+		// Swap
+		temp = numbers[0];
+		numbers[0] = numbers[i];
+		numbers[i] = temp;
+	 
+		siftDown(numbers, 0, i-1);
+	  }
+	}
+	 
+	void siftDown(int numbers[], int root, int bottom) {
+	  int maxChild = root * 2 + 1;
+	 
+	  // Find the biggest child
+	  if(maxChild < bottom) {
+		int otherChild = maxChild + 1;
+		// Reversed for stability
+		maxChild = (numbers[otherChild] > numbers[maxChild])?otherChild:maxChild;
+	  } else {
+		// Don't overflow
+		if(maxChild > bottom) return;
+	  }
+	 
+	  // If we have the correct ordering, we are done.
+	  if(numbers[root] >= numbers[maxChild]) return;
+	 
+	  // Swap
+	  int temp = numbers[root];
+	  numbers[root] = numbers[maxChild];
+	  numbers[maxChild] = temp;
+	 
+	  // Tail queue recursion. Will be compiled as a loop with correct compiler switches.
+	  siftDown(numbers, maxChild, bottom);
+	}	
+	
+	/*** heap sort O(nlogn)****/	
+	void mergesort(int *a, int*b, int low, int high)
+	{
+		int pivot;
+		if(low<high)
+		{
+			pivot=(low+high)/2;
+			mergesort(a,b,low,pivot);
+			mergesort(a,b,pivot+1,high);
+			merge(a,b,low,pivot,high);
+		}
+	}
+	void merge(int *a, int *b, int low, int pivot, int high)
+	{
+		int h,i,j,k;
+		h=low;
+		i=low;
+		j=pivot+1;
+	 
+		while((h<=pivot)&&(j<=high))
+		{
+			if(a[h]<=a[j])
+			{
+				b[i]=a[h];
+				h++;
+			}
+			else
+			{
+				b[i]=a[j];
+				j++;
+			}
+			i++;
+		}
+		if(h>pivot)
+		{
+			for(k=j; k<=high; k++)
+			{
+				b[i]=a[k];
+				i++;
+			}
+		}
+		else
+		{
+			for(k=h; k<=pivot; k++)
+			{
+				b[i]=a[k];
+				i++;
+			}
+		}
+		for(k=low; k<=high; k++) a[k]=b[k];
+	}
+
+
+	
+10. 給定一個整型變量a，寫兩段程式碼，第一個設置a的bit 3，第二個清除a 的bit 3。
+	在以上兩個操作中，要保持其它位不變。
+Ans:
+	a. a |= 1 << 3;
+	b. a &= ~(1 << 3);
+
+12. 已知string定義如下，請implement以下函式
+	class String
+	{
+	public:
+		String(const char *str = NULL); // default constructor
+		String(const String &another); // default copy constructor
+		~String() // destructor
+		String & operator = (const String &rhs); // assign
+	private:
+		char *m_data;
+	}
+Ans:
+	String::String(const char *str)
+	{
+		if(str == NULL)
+		{
+			m_data = new char[1];
+			m_data[0] = '\0';
+		}
+		else
+		{
+			m_data = new char[strlen(str)+1];
+			strcpy(m_data, str);
+		}
+	}
+	
+	String::String(const String &another)
+	{
+		m_data = new char[strlen(another.m_data) + 1];
+		strcpy(m_data, another.m_data);
+	}
+
+	String& String::operator = (const String &rhs)
+	{
+		if(this == &rhs)
+			return *this;
+		delete [] m_data;
+		m_data = new char[strlen(rhs.m_data)+1];
+		strcpy(m_data, rhs.m_data);
+		return *this;
+	}
+	
+	String::~String()
+	{
+		delete [] m_data;
+	}
+
+13. 實作 memcpy
+Ans:
+	void *memcpy(void *dest, const void *src, unsigned int count)   
+	{   
+	    assert((dest != NULL) && (src != NULL));   
+	    void *address = dest;   
+	    while (count --)   
+	    {   
+	        *(char *) dest = *(char *) src;   
+	        dest = (char *) dest + 1;   
+	        src = (char *) src + 1;   
+	    }   
+	    return address;   
+	}   
+		
+14. 用linklist實作stack, queue	
+Ans:
+	a. stack
+
+		struct node
+		{
+			int data;
+			node *next;
+		};
+			
+		class stack
+		{
+		public:
+			stack() {first = NULL;};
+			~stack();
+			void push (int data);
+			int pop();
+		private:
+			node* first;
+		}
+		
+		stack::~stack()
+		{
+			node* next;
+			while(first)
+			{
+				next = first->next;
+				delete first;
+				first = next;
+			}			
+		}
+		void stack::push(int data)
+		{
+			node* new = new node;
+			new->data = data;
+			new->next = first;
+			first = new;
+		}
+		
+		int stack::pop()
+		{
+			node* current = first;
+			int data = current->data;
+			first = first->next;
+			delete current;
+			return data;
+		}
+		
+	b. queue
+	
+		struct node
+		{
+			int data;
+			node* next;
+		}
+		
+		class Queue()
+		{
+		public:
+			Queue(){
+				head = NULL;
+				tail = NULL;
+			};
+			~Queue();
+			void push(int data);
+			int pop();
+		private:
+			node* head;
+			node* tail;
+		};
+
+		Queue::~Queue()
+		{
+			node* next;
+			while(head)
+			{
+				next = head->next;
+				delete head;
+				head = next;
+			}
+		}
+		
+		void Queue::push(int data)
+		{
+			node* new = new node;
+			new->data = data;
+			if (head == NULL)
+				head = tail = new;
+			else
+			{
+				tail->next = new;
+				tail = new;
+			}
+		}
+		
+		int Queue::pop()
+		{
+			if ( head == NULL)
+				return
+			
+			int data = head->data;
+			node* dump = head;
+			head = head->next;
+			delete dump;
+			
+			if (head == NULL)
+				tail = NULL;
+			
+			return data;
+		}
+		
+15. 實作strcmp(string compare), 
+		strcat(append string在src string後面), 
+		strlen(計算string長度), 
+		strrev(反轉string), 
+		strtok(根據token把source切成多個string)
+Ans:
+	int strcmp(const char *s, const char *t)   
+	{   
+	    assert(s != NULL && t != NULL);   
+	    while (*s && *t && *s == *t)   
+	    {   
+	        s++;   
+	        t++;   
+	    }   
+	    return (*s - *t);   
+	}   
+	  
+	char *strcat(char *strDes, const char *strSrc)   
+	{   
+	    assert((strDes != NULL) && (strSrc != NULL));   
+	    char *address = strDes;   
+	    while (*strDes != '\0')   
+	        strDes++;   
+	    while ((*strDes++ = *strSrc++) != '\0');   
+	    return address;   
+	}   
+	  
+	int strlen(const char *str)   
+	{   
+	    assert(str != NULL);   
+	    int len = 0;   
+	    while (*str++ != '\0')   
+	        len++;   
+	    return len;   
+	} 		
+  
+	void* strrev(char *s)   
+	{   
+	    assert(s != NULL);   
+	    char *t = str, c;   
+	    while (*t != '\0')   
+	        t++;   
+	    for (--t; s < t; ++ s, -- t)   
+	    {   
+	        c = *s;   
+	        *s = *t;   
+	        *t = c;   
+	    }   
+	} 
+
+	char *strtok(char *strToken, const char *str)  
+	{  
+	    assert(str != NULL);  
+	    static char *last;  
+	      
+	    if (strToken == NULL && (strToken = last) == NULL)  
+	        return (NULL);  
+	      
+	    char *s = strToken;  
+	    const char *t = str;  
+	    while (*s != '\0')  
+	    {  
+	        t = str;  
+	        while (*t != '\0')  
+	        {  
+	            if (*s == *t)  
+	            {  
+	                last = s + 1;  
+	                if (s - strToken == 0) {  
+	                    strToken = last;  
+	                    break;  
+	                }  
+	                *(strToken + (s - strToken)) = '\0';  
+	                return strToken;  
+	            }  
+	            ++ t;  
+	        }  
+	        ++ s;  
+	    }  
+	    return NULL;  
+	}  	
+
+16. 如何知道一個linklist有cycle
+Ans:
+	// Floyd's Cycle-Finding Algorithm
+	function boolean hasLoop(Node startNode){
+	Node slowNode = startNode;
+	Node fastNode1 = startNode;
+	Node fastNode2 = startNode;
+
+	while (slowNode && fastNode1 = fastNode2.next() && fastNode2 = fastNode1.next()){
+	 if (slowNode == fastNode1 || slowNode == fastNode2) 
+		return true;
+
+	 slowNode = slowNode.next();
+	}
+	return false;
+	}
+	
+17. 實作一種sorting用STL list
+Ans:
+	
+18. 找出陣列裡的過半數字
+Ans:
+
+	int overHalf(int* numbers, unsigned int length)
+	{
+		if(numbers == NULL && length == 0)
+			return 0;
+	 
+		int result = numbers[0];
+		int count = 1;
+		for(int i = 1; i < length; ++i)
+		{
+			if (numbers[i] == result)
+				count++;
+			else
+			{
+				if(count == 0)
+				{
+					result = numbers[i];
+					count = 1;
+				}
+				else
+					count--;
+			}
+		}
+	 
+		// verify whether the input is valid
+		times = 0;
+		for(int i = 0; i < length; ++i)
+		{
+			if(numbers[i] == result)
+				times++;
+		}
+	 
+		if(times * 2 <= length)
+			result = 0;
+	 
+		return result;
+	}
+
+
+19. 實作一個function template
+Ans:
+	//normal function:
+	int myAdd(int a, int b) {
+		return a + b;
+	}
+	 
+	//function template
+	template <class T> T myAdd(T a, T b)
+	{
+		return a + b;
+	}
+	 
+	//基於C/C++的自由撰寫風格，通常分兩行。
+	template <class T>
+	T myAdd(T a, T b)
+	{
+		return a + b;
+	}
+	 
+	//apply:
+	int a = 1, b = 2;
+	myAdd(a, b);
+
+
+
+20. 如何在Unix用一行指令就輸出某個file的第27行	
+
+21. 如何把一本書裡面所有的單字存起來，並且知道他的出現次數。
+	Query的時侯能用O(1)的時間就得到答案?
+	
+22. Implement一下最長出現序列的演算法?
+	

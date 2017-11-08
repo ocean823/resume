@@ -1,0 +1,345 @@
+1. 用3分鐘簡短的介紹一下你自已 
+	* 注意速度慢，直接點出自已的亮點，優勢，勿條列式流水帳
+	* RunSnakeRun, PerfMonitor 這兩個重點，先講目的再講細項
+	
+Ans:
+	午安各位，很高興能在這裡跟各位介紹一下我自已，我叫ocean，來此應徵 validation tool的software developer. 
+	
+	* Good morning, I'm glad that I have opportunity to introduction myself. My name is Ocean, and the position I interviewed is software developer for validation tool WinPVT.
+	
+	我目前就職於訊連，主要focus在windows application的programming。
+	工作經驗六年，title為資深工程師。
+	目前正在開發PowerDVD14，PowerDVD系列這個產品佔了公司revenu接近70%
+	
+	* I'm working in Cyberlink for six yeras, and focus on Windows application programming.
+	My title is senior engineer.
+	Currently, I'm developing PowerDVD now, and PowerDVD is a product which accounts for 70% of whole company revenue. The latest version of PowerDVD is 14.
+	
+	我的自我介紹分成兩個部分
+	一開始我想先講一下我跟HP的淵源
+	接著是一個關於我最近開發tool的一個經驗
+	
+	* There are two parts in my introduction.
+	The first one is about experience for HP OEM project development.
+	The second one is about experience of tool development recently.
+	
+	之前曾經有一年半的時間在開發HP的OEM project，project名字叫MediaSmart跟 TouchSmart.
+	這兩個product主要是bundle在HP notebook上。
+	
+	* I had participated in HP OEM project development for about one and half years. The Product name is MediaSmart and TouchSmart, and they are application boudled on HP notebook.
+	
+	在MediaSmart我開發了UPnP的功能
+	讓MediaSmart不單純只能對本機上的media做操作(編輯，燒錄，播放..)
+	還能對其他device透過UPnP這個功能去browse/playback 其他device share出來的media
+	進一步達到家庭劇院的效果
+	
+	* I dveloped UPnP feature in MediaSmart.
+	This feature makes that MediaSmart can not only operate local media (the operation maybe like editing, burning, playback..), but also browse/playback meida which are shared from other server.
+	It makes HP notebook has home theater function.
+	Think about a scenario, when you stay in livingroom, 
+	you can watch content in study room with HP notebook.
+	
+	UPnP主要就是在架構在OSI第四層 transport layer 之上的一種protocol，跟TCP/UDP是同個layer。
+	UPnP 讓兩台device之間可以互相溝通，
+	可以當server 分享自已的media
+	可以當client 去播放/瀏覽別人分享出來的media
+	可以當control 去指定A device的content要在B device上播放
+	
+	* UPnP is based on transport layer which is the 4th layer in OSI, and the layer is the same as TCP/UDP.
+	UPnP makes communication between different devies.
+	You can be a server to share your media.
+	You can be a client to playback/browse media which is shared by others.
+	You can be a controller to assign contet in device A to be playback by device B.
+		
+	順道一提在protocol的實作之中有用到SOAP，內容主要是在用XML格式描述一台UPnP device的功能
+	
+	* By the way, I use SOAP when I implement UPnP protocol.
+	It describes the capability of UPnP device in XML format.
+	
+	在TouchSmart開發的時侯social network當道
+	youtube/facebook正是最紅的時侯，當然HP也不會放過這個機會
+	加上每隻公司的AP都想整合這些service
+	我被assign了youtube/facebook的engine開發
+	主要是希望social network能夠有一個統一的engine，提供方便而且好用的介面
+	開發了YoutubeMgr based在google提供的GData
+	開發了FacebookMgr based在facebook 本身的 graph API
+	做到可以登入/query/search/upload 這些功能
+	後來因為performance不錯，大部分有結合social network的product都有用到這兩個engine
+	我在TouchSmart整合的youtube/facebook service的同時統一了底層的engine
+	
+	* Whne I develop TouchSmart, the social network is popular, like YouTube, Facebook.
+	HP wants us to integrate these social services, and so do Cyberlink.
+	I built up two engines to provide social services for TouchSmart and Cyberlink products.
+	One is YoutubeMgr which used GData provided by Google, and the other is FacebookMgr which used GraphAPI provided by Facebook.
+	These two engines have function to login, query, search, and upload.
+	Cyberlink produces which wants to integrate social services will use my engines as its good performance and easy to use interface.
+	
+	所以相信我的背景和工作經驗能讓我勝任這份工作。
+	
+	* So I believe that my background and working experinece makes me as best candidate for this position.
+	
+	接著因為performance不錯的關係，我被assign去開發PowerDVD13
+	最近開發出了一個tool，名字叫做Performance monitor，主要在做AP launch performance的分析
+	成果就是原來performance tuning的過程從兩天縮短到40分鐘。
+	
+	* The second part is about experience of tool development.
+	After HP OEM project development with good performance, I was assigned to development PowerDVD13.
+	Recently, I've developed a tool whose name is PerfMonitor.
+	It focus on AP launch peformance anaylysis and parsing. 
+	This tool shorten the peformance tuning time from 2 days to 40 minutes.
+	
+	PowerDVD是一個定位在media player的軟體
+	所以點兩下AP icon 和點 video/photo/music file 兩下的launch的速度對我們來說是非常重要的
+	試想如果你播一個檔案，double click之後發現三秒後才看到畫面
+	這個media player會是一個合格的player嗎?
+	
+	* PowerDVD is software whose position is media player.
+	So launch performance is very important for such kinds of software.
+	Think about it, if you double cilck desktop icon or a video file, 
+	the video frame just appear after 3 seconds. 
+	Do you think this is a qualified player? I think the anser is negative.
+	
+	所以launch performance對PowerDVD這種定位的product來說是非常重要的。
+	以前launch performance這件事的checking是非常耗時的
+	那check的flow會是從UI layer往下找，中間可以經過middle layer到最後可能到kernellayer也就是codec 的level
+	這件事情的處理是非常花時間，RD從接到要找出是誰讓launch速度變慢這件事
+	到知道root cause並且by pass給相關的team 處理可能就需要兩天之久。
+
+	* So launch performance is very important for PowerDVD.
+	Originally, when you want to tune performance or check why this build launch performance is worse than previous build.
+	You might check it from top to bottom, from UI layer to middle layer to kernel layer as codec level.
+	This checking process costs much time, it might need 2 days to find out which module makes performace become worse, and then try to understand root case, finally assign these tasks to related departments and tell them which API you use is the root casue to make performace worse.
+	
+	為了節省effort開發出了PerfMonitor這個tool	
+	這個tool主要是在monitor 各種 AP launch的perfomance
+	包括了disc DVD/BD, file MPEG2/WMV/MPEG4..., 開機後第一次launch
+	產生的log經過分析之後會by各種不同module紀錄時間
+	並且highlight出來那個module花了多餘的時間	最後產生一個html把相關的數據及這次因為那個module變慢導致performance比上次來的差
+	然後send mail給相關的人
+
+	* I develop PerfMonitor to reduce such kind of overhead.
+	This tool is mainly monitor each kinds of AP launch peformance,
+	including disc DVD/BD, file MPEG2/WMV/MPEG4, etc, and the firt time launch after reboot.
+	The generated log will recoed time after analyzing and parsing, then highlight which module costs redundant time.
+	Finally, it will generate HTML report then send to related persons for their reference.
+	
+	這所有的過程只需要40分鐘
+	也就是說只需要40分鐘我們就能找到問題在那，
+	並且請當事者直接處理，省掉了跨部門溝通的時間及多餘trace的時間
+
+	* The whole process costs about 40 minutes.
+	It save the cross department communication time and redundant root cause trace time.
+	
+	這件事情的經驗讓我對tool的開發流程及不同部門的coordinate非常有幫助
+	而我今天面試貴公司的validation tool我覺得自已是最適合這個職位的人
+
+	* This experience is very helpful for tool development and corss-department coordinate. So I think I am the best candidate for this position.
+	
+	如果能進入貴公司，跟世界級的工程師一起合作
+	對我來說是非常好的機會提升自已的能力及貢獻自已所學。
+	謝謝!
+
+	* If I have the pleasure to work for HP, and works with world-class level engineer.
+	It's a greate chance for me to enhance myslef and contribute what I learn.
+	Thanks !
+	
+	
+2. 你覺得自已有什麼缺點?
+	* 容易緊張為開頭，後來發現透過充份的準備可以解決這個問題
+	* 講完的最後可以加上"請問這樣有回答到你的問題嗎"來回應
+
+Ans:
+	* 我有兩個缺點，一個是容易緊張，一個是比較龜毛
+	
+	* I have weak points, one is the easy to be nervous, and the other one is picky.
+	
+	* 容易緊張
+	  我的缺點是容易緊張，對於不熟悉或是準備不充份的事情我會容易緊張。
+	  不過後來我發現這件事可以透過充分的準備來化解。
+		
+	  曾經在公司對著整個部門40幾個人要給個talk
+	  一開始被assign做這件事的時侯非常緊張
+	  因為topic自已並不是這麼熟悉
+	  (topic內容主要是如何為公司interview 真正需要的人才)
+	  而且40幾個人算是一個不小的規模
+		
+	  後來透過對於topic的了解並各種參考書的重點整理及摘要
+	  還有自已找同事來做內部的rehersal
+	  這次talk在公司內部獲得不錯的迴嚮
+	  HR也有聽說有在研讀了一些我提到的相關書籍
+	
+	* My first weak point is easy to be nervous.
+	  I will be nervous toward stuff which I'm not familiar with or I dont' have fully preparation.
+	  But finally I found that this could be resolved by sufficient preparation.
+	  
+	  I had been assigned a task to give talk to whole department about 40 members.
+	  I'm very nervous when I was assigned, because I'm not familiar with this topic.
+	  (topic is about how to recruit people who is we actually want)
+	  and 40 members talk is a large scale speech.
+	  
+	  I try to understaind this topic from different aspects.
+	  From internet or other reference book, I made some key points and summary.
+	  Then I find my collegue to do some internal rehersal.
+	  Finally this talk got strong feedback, and I've heard that our HR had started to study book what I mentioned in this talk.
+	  
+	* 比較龜毛
+	  公司內部有個不錯的規定就是code review
+	  主要是junior的engineer commit code之後 senior會review他的code並確定是不是有問題
+	  曾經有次一個commit被我rework了七次	  
+	  從架構不好到coding convention都被我念了一遍
+		
+	* The second one is that I'm picky.
+	  I not only want stuff to be fine but also better and better.
+	  As a minor mistake or ignorance might cause whole architecture crash.
+	  So my co-worker think that I'm picky.
+
+	  For example, There's good tradition in Cyberlink, and it is code review.
+	  It is about that senior engineer will review code which is committed by junior enginner.
+	  This method is to ensure junior commitment would not break whole architecture or generate some stupid bug.
+	  I have reworked 7 times in one commmitment from one junior.
+	  The concern like that he doesn't find the root cause but just workaround to fix issue.
+	  and not flexibile architecture design 
+	  and wrong naming convnetion...etc .
+	
+	
+3. 你覺得自已有什麼優點?
+Ans:
+	我的優點有3個
+	第一個是隨時都在思考研究新方法來提升工作效率
+	第二個是隨機應變的能力很強
+	第三個是學習力強，對新技術感興趣
+	
+	* 隨時隨地思考新方法提升工作效率
+	  performacne tuning一直困擾RD的問題
+	  因為要tune performance必須對整個架構很熟悉知道可能的問題在那
+	  偏偏有時侯有些performance的問題只有在大量data才會發生
+	  比如說upload 10萬張照片或import 一千個video
+	  這再再都造成了reproduce去找root cause的困難
+	  
+	  所以survey了python profile的tool發現有個叫RunSnakeRun
+	  這個tool是參加了pyCom的聚會偶然聽到有人分享的
+	  研究了之後發現他有了圖形化的介面
+	  把雜亂的profile data整理的大家能一目了然
+	  
+	  我在runsnakerun上還架了一層wrapper
+	  做了個utility給大家使用，
+	  本來的指令可能有點繁瑣
+	  現在只要包我的utility多寫一行code就能gen出相對應的profile 的UI file.
+	  可以指定執行超過多久時間就dump，就是做了幾次就dump...
+	  像很多team現在也在採用我的utility來做performance profiling的事情來節省時間。
+	  
+	* 隨機應變能力很強
+	  我能夠根據不同project的屬性用不同的方法實作他
+	  像tool的開發有些是要求開發時程短我就會用python直接實作
+	  像底層的parser需要比較嚴謹而且要求performance我就會用C++實作
+	  
+	  python是動態語言，開發時間短
+	  產生出來的byte code在效率會不如C++來的好
+	  因為interpreter是一行一行的執行
+	  C++是靜態語言 嚴謹 performance好但是開發時間會比較長
+	  source code經過preprocess, compiler, assember產生出來的object code到最後linker link起來產生的execution binary
+	  執行程式會比較好
+	  
+	  曾經在Olympus的project裡
+	  因為是相機的軟體很重視thumbnail generation的速度
+	  但是我們這段先天上的開發就是python code，而且中間還有python2.5本身的GIL的限制
+	  也就是python 2.5的bytecode其實是不thread safe的
+	  所以變成只有single thread的performance
+	  
+	  所以當時我把相關gen thumbnail的python code全部搬成C++ code
+	  而且加了multithreading的機制
+	  improve了接近了70%
+	  也就是說以前gen 一萬張圖可能需要10s
+	  現在只需要3s
+	  
+	
+	* 學習力強而且對新技術感興趣
+	  在公司我是很多個module的owner，有tool 有engine 有 media的parser
+	  那一個tool不能從頭是同一個人從頭做到尾
+	  中間一定會經過一些transfer
+	  
+	  一方面長官覺得我可以handle
+	  一方面我對這些新東西很有興趣
+	  所以接了不少module
+	  在交接完一個禮拜內我能pickup這些module本身的background knowledge	  
+	  再接下來就能開始做feature的開發還有接受各team使用上的bug report.
+	  
+	  對新技術我也給過不少次關於android入門的talk
+	  也有在自學java javascript的東西	 
+	
+4. 為何選擇HP?
+	* 講出CL vs HP不同的地方，為何在訊連學不到的東西HP學的到
+	* 這裡需要了解HP產品及公司的細節
+	* 甚而可以提出CL那裡有問題，這些問題可以在HP獲得改善
+	* 為什麼在HP會有更好的發展
+
+Ans: 
+	我覺得HP是world class的外商公司
+	這裡有頂尖的人才及世界級豐富的資源
+	對於想要提升自我及需要更大舞台的人
+	HP都會是第一選擇
+	
+5. 你能帶給HP什麼value
+	* 可以用CL的經驗來壓他
+	* 開發時程快，經驗充足
+
+Ans:
+	* 在CL六年豐富的軟體開發經驗，我覺得能為HP帶來更好更有效率的tool去節省effort
+	* 跨部門溝通經驗豐富，我可以為HP節省掉不必要溝通的effort
+	
+6. 舉一件讓你印象深刻的事情
+Ans:
+
+	曾經解決了一個訊連在win8上會block shipping的bug
+	這個bug就是我們的BD在win8的WMC(windows media center)播起來會黑
+	對於PowerDVD來說這是一個非常嚴重的問題
+	嚴重到董事長親自下來關切說這是top priority的bug
+	
+	* I've ever resolved issue which blocks PowerDVD shipping on Win8.
+	This issue is that there's no video frame when playback BD on WMC of Win8.
+	It's very serious issue that our CEO indicate this issue is top priority
+	
+	我被assign到處理這個問題
+	問題的本身其實滿複雜的
+	主要就是PowerDVD plugin在WMC裡面
+	而BD playback本來win8上有些限制，就是root AP必須做某些設定BD播起來才有畫面
+	像我們如果是PowerDVD單獨launch的話有做這些事就沒問題
+	
+	但是我沒辦法叫WMC去做這些事阿
+	因為他是Microsoft的AP阿
+	後來大概花了三天
+	我用了類似駭客的方法去Hook WMC的process
+	應用了類似SPY++的方法(setWindowsHookEx)讓他去執行我們的一段code
+	最後才讓BD playback起來是有畫面的
+	
+7. 你還有什麼問題嗎?
+Ans:
+	當然~
+	* 請問你決定這個職位的人選應該有什麼素質
+	* 決定雇用的時間大概要多久?
+	* 這個部門(職位)最大的挑戰是什麼
+	* 關於我的資格和能力，還有什麼要問的嗎?
+	* 為什麼這個職位要開始招聘，然後最近上104看的時侯職位已經關閉了
+
+8. 為什麼六年了你還是資深工程師?
+	* 因為我公司架構面的問題，技術職在公司的發展是比較受限
+	* 我對管理職沒技術職這麼有興趣，而管理職在公司是升的比較快的
+
+8.1 你覺得你自已能力如何?
+	* 我對自已在tool的開發還有softwware programming上是很有自信的
+	* 對於不熟悉的領域我的學習速度是很快的
+	
+8.2 為什麼我們要花170請你呢?
+Ans:
+	* 因為我最近從群暉拿到150的offer
+	* 我對NAS不是很熟悉，但是我對tool的開發是非常有經驗的
+	  我覺得我可以對HP帶來更多的貢獻，節省更多effor，所以170是一個合理的價位
+	  
+9. 如果今天你沒辦法google怎麼辦?
+Ans: 
+	* 先請問一下我們有機會在沒網路的地方coding嗎?
+	* 可以試著defense去強調自已是個通才
+	* 我覺得學習是base在別人的經驗之上的
+	  今天不應該是把所有東西所有定義都記在心裡
+	  而且記得一個精神學習解決問題的方法
+	  當你遇到一個問題，你可以憑藉過去的經驗快速的找到solution
